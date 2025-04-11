@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <!-- Created with SVG-edit - https://github.com/SVG-Edit/svgedit-->
+ <g class="layer">
+  <title>Layer 1</title>
+  <rect class="obstacle" fill="none" height="125" id="block1" stroke="#000000" stroke-width="5" width="128" x="96" y="55.67"/>
+  <rect class="obstacle" fill="none" height="141" id="block2" stroke="#000000" stroke-width="5" width="142" x="351" y="233.67"/>
+ </g>
+</svg>

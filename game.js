@@ -1,9 +1,21 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// Background image
+const background = new Image();
+background.src = 'map1.svg';
+
 // Set canvas size to match window
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+
+// Camera properties
+const camera = {
+    x: 0,
+    y: 0,
+    width: canvas.width,
+    height: canvas.height
+};
 
 // Player properties
 const player = {
@@ -15,7 +27,9 @@ const player = {
     ySpeed: 0,
     acceleration: 0.2,
     deceleration: 0.2,
-    color: '#3498db'
+    color: '#3498db',
+    lastX: canvas.width / 2,
+    lastY: canvas.height / 2
 };
 
 // Track key states
@@ -38,6 +52,34 @@ window.addEventListener('keyup', (e) => {
         keys[e.key.toLowerCase()] = false;
     }
 });
+
+// Obstacles data
+const obstacles = [
+    {x: 96, y: 55.67, width: 128, height: 125}, // block1
+    {x: 351, y: 233.67, width: 142, height: 141} // block2
+];
+
+// Check collision between player and obstacles
+function checkObstacleCollision() {
+    for (const obstacle of obstacles) {
+        // Check if player circle intersects with obstacle rectangle
+        const closestX = Math.max(obstacle.x, Math.min(player.x, obstacle.x + obstacle.width));
+        const closestY = Math.max(obstacle.y, Math.min(player.y, obstacle.y + obstacle.height));
+        
+        const distanceX = player.x - closestX;
+        const distanceY = player.y - closestY;
+        
+        const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+        
+        if (distance < player.radius) {
+            // Collision detected, revert to last position
+            player.x = player.lastX;
+            player.y = player.lastY;
+            return true;
+        }
+    }
+    return false;
+}
 
 // Game loop
 function gameLoop() {
@@ -72,22 +114,48 @@ function gameLoop() {
         }
     }
     
+    // Save last position before moving
+    player.lastX = player.x;
+    player.lastY = player.y;
+    
     // Update player position based on speed
     player.x += player.xSpeed;
     player.y += player.ySpeed;
     
-    // Boundary checking
-    if (player.x - player.radius < 0) player.x = player.radius;
-    if (player.x + player.radius > canvas.width) player.x = canvas.width - player.radius;
-    if (player.y - player.radius < 0) player.y = player.radius;
-    if (player.y + player.radius > canvas.height) player.y = canvas.height - player.radius;
+    // Check for obstacle collisions
+    checkObstacleCollision();
     
-    // Draw player
+    // Update camera position to follow player (keeping player centered)
+    camera.x = player.x - canvas.width / 2;
+    camera.y = player.y - canvas.height / 2;
+    
+    // Boundary checking (now relative to camera)
+    if (player.x - player.radius < camera.x) player.x = camera.x + player.radius;
+    if (player.x + player.radius > camera.x + canvas.width) player.x = camera.x + canvas.width - player.radius;
+    if (player.y - player.radius < camera.y) player.y = camera.y + player.radius;
+    if (player.y + player.radius > camera.y + canvas.height) player.y = camera.y + canvas.height - player.radius;
+    
+    // Save current canvas state
+    ctx.save();
+    
+    // Translate canvas based on camera position
+    ctx.translate(-camera.x, -camera.y);
+    
+    // Draw background (now relative to camera)
+    if (background.complete) {
+        ctx.drawImage(background, 
+            canvas.width/2 - background.width/2, canvas.height/2 - background.height/2);
+    }
+    
+    // Draw player (now relative to camera)
     ctx.beginPath();
     ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
     ctx.fillStyle = player.color;
     ctx.fill();
     ctx.closePath();
+    
+    // Restore canvas state
+    ctx.restore();
     
     requestAnimationFrame(gameLoop);
 }
@@ -96,6 +164,8 @@ function gameLoop() {
 window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    camera.width = canvas.width;
+    camera.height = canvas.height;
 });
 
 // Start the game
