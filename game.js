@@ -56,6 +56,7 @@ window.addEventListener('keyup', (e) => {
 // Obstacles data
 const obstacles = [
     {x: 96, y: 55.67, width: 128, height: 125}, // block1
+
     {x: 351, y: 233.67, width: 142, height: 141} // block2
 ];
 
@@ -68,15 +69,32 @@ function checkObstacleCollision() {
         
         const distanceX = player.x - closestX;
         const distanceY = player.y - closestY;
-        
-        const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-        
-        if (distance < player.radius) {
+
+        // if distancex is less than radius and larger than -player.radius, then it is colliding horizontally.
+        if (distanceX < player.radius && distanceX > -player.radius) {
             // Collision detected, revert to last position
             player.x = player.lastX;
+            return true;
+        }
+
+        // if distancey is less than radius and larger than -radius, then it's colliding vertically.
+        if (distanceY < player.radius && distanceY > -player.radius) {
+            // Collision detected, revert to last position
             player.y = player.lastY;
             return true;
         }
+        
+        const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+        // show distance between player and obstacle for debugging purposes
+        console.log(distance);
+        
+        //if (distance < player.radius) {
+            // Collision detected, revert to last position
+        //    player.x = player.lastX;
+       //     player.y = player.lastY;
+       //     return true;
+       // }
     }
     return false;
 }
@@ -144,7 +162,8 @@ function gameLoop() {
     // Draw background (now relative to camera)
     if (background.complete) {
         ctx.drawImage(background, 
-            canvas.width/2 - background.width/2, canvas.height/2 - background.height/2);
+            //canvas.width/2 - background.width/2, canvas.height/2 - background.height/2);
+            0, 0);
     }
     
     // Draw player (now relative to camera)
