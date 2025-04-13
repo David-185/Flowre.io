@@ -57,7 +57,7 @@ window.addEventListener('keyup', (e) => {
 const obstacles = [
     {x: 96, y: 55.67, width: 128, height: 125}, // block1
 
-    //{x: 351, y: 233.67, width: 142, height: 141} // block2
+    {x: 351, y: 233.67, width: 142, height: 141} // block2
 ];
 
 // Check collision between player and obstacles
@@ -87,36 +87,23 @@ function checkObstacleCollision() {
 
 
         if (distance < player.radius) {
-        // if distancex is less than radius and larger than -player.radius, then it is colliding horizontally.
-            if (distanceX < player.radius && distanceX > -player.radius && distanceX !==0) {
+            // if abs(distancex) is less than abs(distancexLast) 
+            if (Math.abs(distanceX) < Math.abs(distanceXLast)) {
                 // Collision detected, revert to last position
-                player.x = player.lastX;
-                
+                player.x = player.lastX; 
             }
 
-            // if distancey is less than radius and larger than -radius, then it's colliding vertically.
-            if (distanceY < player.radius && distanceY > -player.radius && distanceY!==0) {
+            // if abs(distancey) is less than abs(distanceyLast)
+            if (Math.abs(distanceY) < Math.abs(distanceYLast)) {
                 // Collision detected, revert to last position
                 player.y = player.lastY;
-                
             }
 
-            if (distanceX !==0 && distanceY!==0) {
-                // Collision detected, revert to last position
-                player.x = player.lastX;
-                player.y = player.lastY;
-            }
+         
             
             return true; 
         
-        // Collision detected, revert to last position
-            // if distancex is less than radius and larger than -player.radius, then it is colliding horizontally.
-            // if distancey is less than radius and larger than -radius, then it's colliding vertically.
-            // if distancex is less than radius and larger than -player.radius, then it is colliding horizontally.
-            // Collision detected, revert to last position
-        //    player.x = player.lastX;
-       //     player.y = player.lastY;
-       //     return true;
+        
        }
     }
     return false;
