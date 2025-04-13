@@ -57,7 +57,7 @@ window.addEventListener('keyup', (e) => {
 const obstacles = [
     {x: 96, y: 55.67, width: 128, height: 125}, // block1
 
-    {x: 351, y: 233.67, width: 142, height: 141} // block2
+    //{x: 351, y: 233.67, width: 142, height: 141} // block2
 ];
 
 // Check collision between player and obstacles
@@ -69,32 +69,55 @@ function checkObstacleCollision() {
         
         const distanceX = player.x - closestX;
         const distanceY = player.y - closestY;
-
-        // if distancex is less than radius and larger than -player.radius, then it is colliding horizontally.
-        if (distanceX < player.radius && distanceX > -player.radius) {
-            // Collision detected, revert to last position
-            player.x = player.lastX;
-            return true;
-        }
-
-        // if distancey is less than radius and larger than -radius, then it's colliding vertically.
-        if (distanceY < player.radius && distanceY > -player.radius) {
-            // Collision detected, revert to last position
-            player.y = player.lastY;
-            return true;
-        }
-        
         const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 
-        // show distance between player and obstacle for debugging purposes
-        console.log(distance);
+        // calculate distancex and distancey for last position of player
+        const closestXLast = Math.max(obstacle.x, Math.min(player.lastX, obstacle.x + obstacle.width));
+        const closestYLast = Math.max(obstacle.y, Math.min(player.lastY, obstacle.y + obstacle.height));
+
+        const distanceXLast = player.lastX - closestXLast;
+        const distanceYLast = player.lastY - closestYLast;
+        const distanceLast = Math.sqrt(distanceXLast * distanceXLast + distanceYLast * distanceYLast);
+
+        // show distancex and distancey using html elements
+        document.getElementById('distanceX').innerHTML = distanceX;
+        document.getElementById('distanceY').innerHTML = distanceY;
+        document.getElementById('distance').innerHTML = distance;
+
+
+
+        if (distance < player.radius) {
+        // if distancex is less than radius and larger than -player.radius, then it is colliding horizontally.
+            if (distanceX < player.radius && distanceX > -player.radius && distanceX !==0) {
+                // Collision detected, revert to last position
+                player.x = player.lastX;
+                
+            }
+
+            // if distancey is less than radius and larger than -radius, then it's colliding vertically.
+            if (distanceY < player.radius && distanceY > -player.radius && distanceY!==0) {
+                // Collision detected, revert to last position
+                player.y = player.lastY;
+                
+            }
+
+            if (distanceX !==0 && distanceY!==0) {
+                // Collision detected, revert to last position
+                player.x = player.lastX;
+                player.y = player.lastY;
+            }
+            
+            return true; 
         
-        //if (distance < player.radius) {
+        // Collision detected, revert to last position
+            // if distancex is less than radius and larger than -player.radius, then it is colliding horizontally.
+            // if distancey is less than radius and larger than -radius, then it's colliding vertically.
+            // if distancex is less than radius and larger than -player.radius, then it is colliding horizontally.
             // Collision detected, revert to last position
         //    player.x = player.lastX;
        //     player.y = player.lastY;
        //     return true;
-       // }
+       }
     }
     return false;
 }
